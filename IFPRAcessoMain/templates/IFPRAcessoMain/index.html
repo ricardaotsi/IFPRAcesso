@@ -1,0 +1,60 @@
+{% extends 'IFPRAcessoMain/base.html' %}
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Pesquisa</h2>
+    <form method="GET" action="" id="searchform">
+        <div class="form-row">
+            <div class="col">
+                <input class="searchfield form-control" name="identificador" type="text" placeholder="Identificador..." />
+            </div>
+            <div class="col">
+                <input class="searchfield form-control" name="nome" type="text" placeholder="Nome..." />
+            </div>
+            <div class="col">
+                <input class="searchfield form-control" name="cracha" type="text" placeholder="Cracha..." />
+            </div>
+            <div class="col">
+                <input class="searchfield form-control" name="matricula" type="text" placeholder="Matricula..." />
+            </div>
+            <h3>Ativo?</h3>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="ativo" value="S" checked>
+                <label class="form-check-label">SIM</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="ativo" value="N" >
+                <label class="form-check-label">NÃO</label>
+            </div>
+        </div>
+        </br>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary text-center">Pesquisar</button>
+            <a href="/insert/" class="btn btn-primary">Inserir Novo</a>
+        </div>
+    </form>
+</div>
+<!-- <div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Identificador</th>
+                <th scope="col">Nome</a></th>
+                <th scope="col">Cracha</th>
+                <th scope="col">Matricula</th>
+                <th scope="col">Ativo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{row.ds_identificador_aux}}</td>
+                <td><a href='/edit/?cracha={{row.nr_cracha}}&matricula={{row.nr_matricula}}&ativo={{row.fl_ativo}}'>{{ row.nm_pessoa }}</a></td>
+                <td>{{row.nr_cracha}}</td>
+                <td>{{row.nr_matricula}}</td>
+                <td>{{row.fl_ativo}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div> -->
+{% endblock %}

@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ifpracesso
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    networks: 
+      - main
+  web:
+    build: .
+    command: ./run.sh
+    volumes:
+      - .:/webapps
+    ports:
+      - "8000:8000"
+    environment:
+      WAIT_HOSTS: mysql:3306
+    networks: 
+      - main
+networks: 
+  main:
