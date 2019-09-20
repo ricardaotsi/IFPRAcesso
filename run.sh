@@ -1,4 +1,7 @@
 #!/bin/bash
+while ! pg_isready -h "db"; do
+    sleep 1
+done
 yes | python manage.py makemigrations
 python manage.py migrate
 yes | python manage.py makemigrations IFPRAcessoMain

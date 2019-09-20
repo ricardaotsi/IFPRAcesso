@@ -1,15 +1,14 @@
 version: "3.7"
 services:
   db:
-    image: mariadb
+    image: postgres
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ifpracesso
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ifpracesso
     ports:
-      - "3306:3306"
+      - "5432:5432"
     networks: 
       - main
   web:
@@ -19,8 +18,6 @@ services:
       - .:/webapps
     ports:
       - "8000:8000"
-    environment:
-      WAIT_HOSTS: mysql:3306
     networks: 
       - main
 networks: 
