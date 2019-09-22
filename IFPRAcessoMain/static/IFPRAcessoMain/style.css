@@ -204,12 +204,17 @@
     background-color: #007834;
 }
 
-.btn-index:hover{
+.btn-index:hover {
     color: #ffffff;
     background-color: #315c23
 }
 
-.btn-index:active{
+.btn-index:active {
     color: #007834;
     background-color: #ffffff;
+}
+
+#h1-insertid {
+    color:#ffffff;
+    background-color: #007834
 }
