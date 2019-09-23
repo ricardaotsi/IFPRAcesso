@@ -1,5 +1,7 @@
 $(document).ready(function () {
     paginaAtual();
+    $(".alert").hide()
+    $('#identificador').mask('Z',{translation: {'Z': {pattern: /[a-zA-Z ]/, recursive: true}}});
 });
 
 /**
@@ -26,20 +28,39 @@ function paginaAtual() {
  */
 $(".btn-delete").click(function () {
     let identificador = $(this).parent().parent();
+    let botao = $(this)[0]
     if ($(this)[0].childElementCount == 1)
         $(this).append("  <span class='spinner-border spinner-border-sm'></span>");
-    if (confirm("Deseja realmente deletar o Identificador: " + $.trim(identificador.text()))) {
+    if (confirm("Deseja realmente deletar o Identificador: " + identificador[0].innerText)) {
         $.ajax({
             url: '/ajax/deleteId/',
+            type: "GET",
             data: {
-                'identificador': $.trim(identificador.text())
+                'id_identificador': parseInt(identificador[0].children[0].innerText),
+                'identificador':  $.trim(identificador[0].innerText),
             },
             dataType: 'json',
             success: function (result) {
-                identificador.remove();
-            }
+                if(result.resultado==true){
+                    identificador.remove();
+                    $("#mensagem").remove();
+                    $(".alert").removeClass("alert-danger")
+                    $(".alert").addClass("alert-success");
+                    $(".alert").append("<strong id='mensagem'>Identificador deletado com sucesso</strong>");
+                }else{
+                    botao.children[1].remove();
+                    $("#mensagem").remove();
+                    $(".alert").removeClass("alert-success");
+                    $(".alert").addClass("alert-danger");
+                    $(".alert").append("<strong id='mensagem'>Ocorreu um erro na operação</strong>");
+                }
+            },
+            error: function (xhr) {
+                botao.children[1].remove();
+            },
         });
+        $(".alert").slideDown(300).delay(2000).slideUp(1000);
     }else{
-        $(this)[0].children[1].remove();
+        botao.children[1].remove();
     }
 });
