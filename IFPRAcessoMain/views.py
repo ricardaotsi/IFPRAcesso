@@ -4,8 +4,8 @@ Imports
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.db import Error
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from IFPRAcessoMain.models import Identificador
 
 
@@ -23,8 +23,16 @@ def insertId(request):
     Tela inserir Identificador
     """
     if request.method == 'POST':
-        id=Identificador(nome_id=request.POST.get('identificador').upper())
-        id.save()
+        id=Identificador(nome_id=request.POST.get('identificador'))
+        id.nome_id=id.nome_id.upper()
+        if not id.nome_id or id.nome_id == None:
+            messages.error(request, 'Não foi digitado nenhum Identificador')
+        else:
+            try:
+                id.save()
+                messages.success(request, 'Cadastro inserido com sucesso')
+            except Exception as e:
+                messages.error(request, 'Ocorreu um problema no cadastro do Identificador')
         return HttpResponseRedirect("/insertId/")
     else:
         todos_id = Identificador.objects.all().order_by('nome_id')
@@ -43,7 +51,7 @@ def deleteId(request):
         try:
             temp_id.delete()
             resultado = True
-        except Error:
+        except Exception as e:
             resultado = False
     else:
         resultado = False
