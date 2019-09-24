@@ -16,7 +16,8 @@ def pesquisa(request):
     """
     Tela pesquisa
     """
-    return render(request, "IFPRAcessoMain/pesquisa.html")
+    todas_pessoas = Pessoa.objects.all().order_by('nome_pessoa')
+    return render(request, "IFPRAcessoMain/pesquisa.html", {'todas_pessoas':todas_pessoas})
 
 @login_required
 def insertId(request):
@@ -72,7 +73,7 @@ def insertPessoa(request):
         pessoa.ativo = request.POST.get('ativo')
         try:
             pessoa.save()
-            messages.success(request, 'Pessoa inserida com sucesso')
+            messages.success(request, 'Pessoa inserida com sucesso. Aguarde, você será redirecionado automaticamente')
         except Exception as e:
             if isinstance(e, IntegrityError):
                 erro = "Cadastro não realizado:"
