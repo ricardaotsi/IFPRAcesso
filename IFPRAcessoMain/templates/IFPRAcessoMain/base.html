@@ -95,7 +95,7 @@
                         <a class="nav-link dropdown-toggle " href="javascript:void(0)" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false"><i class="fas fa-plus-circle"></i> Cadastro</a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="javascript:void(0)"><i class="fas fa-user-plus"></i>
+                            <a class="dropdown-item" href="{% url 'insertPessoa' %}"><i class="fas fa-user-plus"></i>
                                 Pessoa</a>
                             <a class="dropdown-item" href="{% url 'insertId' %}"><i class="fas fa-tag"></i>
                                 Identificador</a>
@@ -119,6 +119,7 @@
     </header>
 
     {% block content %} {% endblock %}
+    {% block scripts %} {% endblock %}
     <script src="{% static 'IFPRAcessoMain/js/main.js' %}"></script>
 </body>
 

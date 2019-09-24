@@ -1,0 +1,68 @@
+{% extends 'IFPRAcessoMain/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container bg-white mt-3">
+    <form class="mt-3" method="POST">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-5">
+                <select class="form-control" name="identificador">
+                    {% for nome_id in todos_id %}
+                    {% if identificador == nome_id.nome_id%}
+                    <option selected>{{ nome_id }}</option>
+                    {% else %}
+                    <option>{{ nome_id }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <input class="form-control nome" name="nome" type="text" placeholder="Nome..." value="{{ nome }}"
+                    required />
+            </div>
+        </div>
+        <div class="form-row mt-3">
+            <div class="col">
+                <input class="form-control cracha" name="cracha" type="text" placeholder="Cracha..."
+                    value="{{ cracha }}" required />
+            </div>
+            <div class="col">
+                <input class="form-control matricula" name="matricula" type="text" placeholder="Matricula..."
+                    value="{{ matricula }}" required />
+            </div>
+            <div class="col">
+                <input class="form-control ano" name="ano" type="text" placeholder="Ano Entrada..." value="{{ ano }}" required />
+            </div>
+            <h3 class="mr-1">Ativo?</h3>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="ativo" value="S" checked>
+                <label class="form-check-label">SIM</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="ativo" value="N">
+                <label class="form-check-label">NÃO</label>
+            </div>
+        </div>
+        <div class="mt-3 mb-3 text-center">
+            <button type="submit" class="btn btn-index text-center">Inserir</button>
+        </div>
+    </form>
+    <div class="text-center">
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+        <div class="alert alert-dismissible alert-success alerta-insert">
+            {% endif %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+            <div class="alert alert-dismissible alert-danger alerta-insert">
+                {% endif %}
+                <strong>{{message}}</strong>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endblock %}
+    {% block scripts %}
+    <script src="{% static 'IFPRAcessoMain/js/pessoa.js' %}"></script>
+    {% endblock %}
