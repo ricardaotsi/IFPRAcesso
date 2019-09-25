@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="container bg-white mt-3">
-    <form class="mt-3" method="POST" action="" id="searchform">
+    <form class="mt-3" method="GET" action="" id="searchform">
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-5">
@@ -67,8 +67,8 @@
         </li>
         {% for pessoa in todas_pessoas %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="col-2">{{ pessoa.id_pessoa }} </div>
-            <div class="col-4">{{ pessoa.nome_pessoa }} </div>
+            <div class="col-2 id">{{ pessoa.id_pessoa }} </div>
+            <div class="col-4 alterarpessoa">{{ pessoa.nome_pessoa }}</div>
             <div class="col-2">{{ pessoa.cracha_pessoa }} </div>
             <div class="col-2">{{ pessoa.matricula_pessoa }} </div>
             <div class="col-1">{{ pessoa.ano_entrada }} </div>

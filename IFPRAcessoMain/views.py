@@ -3,8 +3,7 @@ Imports
 """
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed
 from django.contrib import messages
 from django.db import IntegrityError
 from IFPRAcessoMain.models import Identificador, Pessoa
@@ -144,3 +143,55 @@ def insertPessoa(request):
         return HttpResponseRedirect("/pessoa/")
     else:
         return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
+
+@login_required
+def updatePessoa(request):
+    todos_id = Identificador.objects.all().order_by('nome_id')
+    if request.method == 'POST':
+        pessoa=Pessoa.objects.get(pk=request.session['pk'])
+        pessoa.nome_pessoa = request.POST.get('nome').upper()
+        pessoa.id_pessoa = Identificador.objects.get(nome_id=request.POST.get('identificador'))
+        pessoa.cracha_pessoa = request.POST.get('cracha')
+        pessoa.matricula_pessoa = request.POST.get('matricula')
+        pessoa.ano_entrada = request.POST.get('ano')
+        pessoa.ativo = request.POST.get('ativo')
+        try:
+            pessoa.save()
+            messages.success(request, 'Pessoa inserida com sucesso. Aguarde, você será redirecionado automaticamente')
+        except Exception as e:
+            if isinstance(e, IntegrityError):
+                erro = "Alteração não realizada:"
+                if Pessoa.objects.filter(nome_pessoa=pessoa.nome_pessoa).exists():
+                    erro = erro+' | Pessoa já existe'
+                if Pessoa.objects.filter(cracha_pessoa=pessoa.cracha_pessoa).exists():
+                    erro = erro+' | Cracha já existe'
+                if Pessoa.objects.filter(matricula_pessoa=pessoa.matricula_pessoa).exists():
+                    erro = erro+' | Matricula já existe'
+                messages.error(request, erro+" |")
+            else:
+                messages.error(request, 'Ocorreu um problema no cadastro da Pessoa')
+            # request.session['nome'] = pessoa.nome_pessoa
+            # request.session['cracha'] = pessoa.cracha_pessoa
+            # request.session['matricula'] = pessoa.matricula_pessoa
+            # request.session['ano'] = pessoa.ano_entrada
+            # request.session['identificador'] = str(pessoa.id_pessoa)
+            # request.session['ativo'] = pessoa.ativo
+        return HttpResponseRedirect("/pessoa/update/")
+    else:
+        return render(request, "IFPRAcessoMain/updatePessoa.html", {'todos_id':todos_id})
+
+@login_required
+def update_session(request):
+    """
+    Ao selecionar uma pesquisa salva a informação id da pessoa, para facilitar a alteração
+    """
+    resultado = False
+    if not request.is_ajax() or not request.method=='POST':
+        return HttpResponseNotAllowed(['POST'])
+    else:
+        request.session['pk'] = Pessoa.objects.get(cracha_pessoa=request.POST.get('cracha', None)).pk
+        resultado = True
+        data={
+            'resultado':resultado
+        }
+        return JsonResponse(data)
