@@ -16,8 +16,52 @@ def pesquisa(request):
     """
     Tela pesquisa
     """
-    todas_pessoas = Pessoa.objects.all().order_by('nome_pessoa')
-    return render(request, "IFPRAcessoMain/pesquisa.html", {'todas_pessoas':todas_pessoas})
+    todos_id = Identificador.objects.all().order_by('nome_id')
+    if request.method == 'POST':
+        pesquisa={
+            'id': request.POST.get('identificador'),
+            'nome': request.POST.get('nome'),
+            'matricula': request.POST.get('matricula'),
+            'cracha': request.POST.get('cracha'),
+            'ano': request.POST.get('ano'),
+            'ativo': request.POST.get('ativo'),
+            'inativo': request.POST.get('inativo')
+        }
+        ativo=""
+        if pesquisa['id'] is None:
+            pesquisa['id'] = ""
+        if pesquisa['ativo'] is None and pesquisa['inativo'] is None:
+            todas_pessoas=Pessoa.objects.filter(nome_pessoa__icontains=pesquisa['nome'],
+                                            id_pessoa__nome_id__icontains=pesquisa['id'],
+                                            cracha_pessoa__icontains=pesquisa['cracha'],
+                                            matricula_pessoa__icontains=pesquisa['matricula'],
+                                            ano_entrada__icontains=pesquisa['ano'],
+                                            ativo__icontains="None").order_by('nome_pessoa')
+        elif pesquisa['ativo'] is not None and pesquisa['inativo'] is not None:
+            todas_pessoas=Pessoa.objects.filter(nome_pessoa__icontains=pesquisa['nome'],
+                                            id_pessoa__nome_id__icontains=pesquisa['id'],
+                                            cracha_pessoa__icontains=pesquisa['cracha'],
+                                            matricula_pessoa__icontains=pesquisa['matricula'],
+                                            ano_entrada__icontains=pesquisa['ano']).order_by('nome_pessoa')
+        elif pesquisa['ativo'] is None:
+            todas_pessoas=Pessoa.objects.filter(nome_pessoa__icontains=pesquisa['nome'],
+                                            id_pessoa__nome_id__icontains=pesquisa['id'],
+                                            cracha_pessoa__icontains=pesquisa['cracha'],
+                                            matricula_pessoa__icontains=pesquisa['matricula'],
+                                            ano_entrada__icontains=pesquisa['ano'],
+                                            ativo__icontains=pesquisa['inativo']).order_by('nome_pessoa')
+        elif pesquisa['inativo'] is None:
+            todas_pessoas=Pessoa.objects.filter(nome_pessoa__icontains=pesquisa['nome'],
+                                            id_pessoa__nome_id__icontains=pesquisa['id'],
+                                            cracha_pessoa__icontains=pesquisa['cracha'],
+                                            matricula_pessoa__icontains=pesquisa['matricula'],
+                                            ano_entrada__icontains=pesquisa['ano'],
+                                            ativo__icontains=pesquisa['ativo']).order_by('nome_pessoa')
+        
+        return render(request, "IFPRAcessoMain/pesquisa.html", {'todas_pessoas':todas_pessoas, 'todos_id':todos_id})
+    else:
+        todas_pessoas = Pessoa.objects.all().order_by('nome_pessoa')
+        return render(request, "IFPRAcessoMain/pesquisa.html", {'todas_pessoas':todas_pessoas, 'todos_id':todos_id})
 
 @login_required
 def insertId(request):
