@@ -1,10 +1,16 @@
 $(document).ready(function () {
+    /**
+     * Mascaras de campo
+     */
     $('.ano').mask("0000");
     $('.matricula').mask("000000000000");
     $('.cracha').mask("00000000");
     $('.nome').mask('Z',{translation: {'Z': {pattern: /[a-zA-Z ]/, recursive: true}}});
 });
 
+/**
+ * Função Django para obter o token de acesso para requisição POST AJAX
+ */
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -21,11 +27,17 @@ function getCookie(name) {
     return cookieValue;
 }
 
+/**
+ * Função Django para obter o token de acesso para requisição POST AJAX
+ */
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
+/**
+ * Ao clicar em uma pessoa para alteração, salva a id da pessoa e redireciona para alteração
+ */
 $(".alterarpessoa").click(function(){
     var divnome = $(this).parent()[0]
     var csrftoken = getCookie('csrftoken');
@@ -52,9 +64,6 @@ $(".alterarpessoa").click(function(){
                                     "&ano="+divnome.children[4].innerText+
                                     "&ativo="+divnome.children[5].innerText
             }
-        },
-        error: function (xhr) {
-            console.log('fail')
         },
     });
 });

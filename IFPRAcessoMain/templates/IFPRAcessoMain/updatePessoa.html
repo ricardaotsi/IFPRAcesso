@@ -6,12 +6,10 @@
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-5">
+                    <label>Identificador</label>
                 <select class="form-control" name="identificador">
-                    {% if request.GET.identificador %}
-                    <option selected>{{ request.GET.identificador }}</option>
-                    {% endif %}
                     {% for nome_id in todos_id %}
-                    {% if request.session.identificador == nome_id.nome_id %}
+                    {% if request.GET.identificador == nome_id.nome_id %}
                     <option selected>{{ nome_id }}</option>
                     {% else %}
                     <option>{{ nome_id }}</option>
@@ -20,59 +18,45 @@
                 </select>
             </div>
             <div class="col">
-                {% if request.GET.nome %}
-                <input class="form-control nome" name="nome" type="text" placeholder="Nome..."
+                    <label>Nome</label>
+                <input class="form-control nome" name="nome" type="text" 
                     value="{{ request.GET.nome }}" required />
-                {% else %}
-                <input class="form-control nome" name="nome" type="text" placeholder="Nome..."
-                    value="{{ request.session.nome }}" required />
-                {% endif %}
             </div>
         </div>
         <div class="form-row mt-3">
             <div class="col">
-                {% if request.GET.cracha %}
-                <input class="form-control cracha" name="cracha" type="text" placeholder="Cracha..."
+                    <label>Cracha</label>
+                <input class="form-control cracha" name="cracha" type="text" 
                     value="{{ request.GET.cracha }}" required />
-                {% else %}
-                <input class="form-control cracha" name="cracha" type="text" placeholder="Cracha..."
-                    value="{{ request.session.cracha }}" required />
-                {% endif %}
             </div>
             <div class="col">
-                {% if request.GET.matricula %}
-                <input class="form-control matricula" name="matricula" type="text" placeholder="Matricula..."
+                    <label>Matricula</label>
+                <input class="form-control matricula" name="matricula" type="text" 
                     value="{{ request.GET.matricula }}" required />
-                {% else %}
-                <input class="form-control matricula" name="matricula" type="text" placeholder="Matricula..."
-                    value="{{ request.session.matricula }}" required />
-                {% endif %}
             </div>
             <div class="col">
-                {% if request.GET.ano %}
-                <input class="form-control ano" name="ano" type="text" placeholder="Ano Entrada..."
+                    <label>Ano Entrada</label>
+                <input class="form-control ano" name="ano" type="text" 
                     value="{{ request.GET.ano }}" required />
-                {% else %}
-                <input class="form-control ano" name="ano" type="text" placeholder="Ano Entrada..."
-                    value="{{ request.session.ano }}" required />
-                {% endif %}
             </div>
-            <h3 class="mr-1">Ativo?</h3>
-            <div class="form-check form-check-inline">
-                {% if request.GET.ativo == 'S'  %}
-                <input class="form-check-input" type="radio" name="ativo" value="S" checked>
-                {% else %}
-                <input class="form-check-input" type="radio" name="ativo" value="S">
-                {% endif %}
-                <label class="form-check-label">SIM</label>
-            </div>
-            <div class="form-check form-check-inline">
-                {% if request.GET.ativo == 'N' %}
-                <input class="form-check-input" type="radio" name="ativo" value="N" checked>
-                {% else %}
-                <input class="form-check-input" type="radio" name="ativo" value="N">
-                {% endif %}
-                <label class="form-check-label">NÃO</label>
+            <div class="col ml-3">
+                <h3 class="ml-3">Ativo?</h3>
+                <div class="form-check form-check-inline">
+                    {% if request.GET.ativo == 'S' %}
+                    <input class="form-check-input" type="radio" name="ativo" value="S" checked>
+                    {% else %}
+                    <input class="form-check-input" type="radio" name="ativo" value="S">
+                    {% endif %}
+                    <label class="form-check-label">SIM</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    {% if request.GET.ativo == 'N'%}
+                    <input class="form-check-input" type="radio" name="ativo" value="N" checked>
+                    {% else %}
+                    <input class="form-check-input" type="radio" name="ativo" value="N">
+                    {% endif %}
+                    <label class="form-check-label">NÃO</label>
+                </div>
             </div>
         </div>
         <div class="mt-3 mb-3 text-center">

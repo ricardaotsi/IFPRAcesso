@@ -6,9 +6,10 @@
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-5">
+                    <label>Identificador</label>
                 <select class="form-control" name="identificador">
                     {% for nome_id in todos_id %}
-                    {% if identificador == nome_id.nome_id%}
+                    {% if request.session.identificador == nome_id.nome_id%}
                     <option selected>{{ nome_id }}</option>
                     {% else %}
                     <option>{{ nome_id }}</option>
@@ -17,30 +18,47 @@
                 </select>
             </div>
             <div class="col">
-                <input class="form-control nome" name="nome" type="text" placeholder="Nome..." value="{{ nome }}"
-                required />
+                    <label>Nome</label>
+                <input class="form-control nome" name="nome" type="text"
+                    value="{{ request.session.nome }}" required />
             </div>
         </div>
         <div class="form-row mt-3">
             <div class="col">
-                <input class="form-control cracha" name="cracha" type="text" placeholder="Cracha..."
-                    value="{{ cracha }}" required />
+                    <label>Cracha</label>
+                <input class="form-control cracha" name="cracha" type="text"
+                    value="{{ request.session.cracha }}" required />
             </div>
             <div class="col">
-                <input class="form-control matricula" name="matricula" type="text" placeholder="Matricula..."
-                    value="{{ matricula }}" required />
+                    <label>Matricula</label>
+                <input class="form-control matricula" name="matricula" type="text" 
+                    value="{{ request.session.matricula }}" required />
             </div>
             <div class="col">
-                <input class="form-control ano" name="ano" type="text" placeholder="Ano Entrada..." value="{{ ano }}" required />
+                    <label>Ano Entrada</label>
+                <input class="form-control ano" name="ano" type="text" 
+                    value="{{ request.session.ano }}" required />
             </div>
-            <h3 class="mr-1">Ativo?</h3>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="ativo" value="S" checked>
-                <label class="form-check-label">SIM</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="ativo" value="N">
-                <label class="form-check-label">NÃO</label>
+            <div class="col ml-3">
+                <h3 class="ml-3">Ativo?</h3>
+                <div class="form-check form-check-inline">
+                    {% if request.session.ativo == 'S' %}
+                        <input class="form-check-input" type="radio" name="ativo" value="S" checked>
+                    {% elif 'ativo' not in request.session %}
+                        <input class="form-check-input" type="radio" name="ativo" value="S" checked>
+                    {% else %}
+                        <input class="form-check-input" type="radio" name="ativo" value="S" >
+                    {% endif %}
+                    <label class="form-check-label">SIM</label>
+                </div>
+                <div class="form-check form-check-inline">
+                        {% if request.session.ativo == 'N' %}
+                    <input class="form-check-input" type="radio" name="ativo" value="N" checked>
+                    {% else %}
+                    <input class="form-check-input" type="radio" name="ativo" value="N" >
+                    {% endif %}
+                    <label class="form-check-label">NÃO</label>
+                </div>
             </div>
         </div>
         <div class="mt-3 mb-3 text-center">

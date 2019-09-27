@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    /**
+     * Mascaras dos campos
+     */
     $(".alerta-delete").hide();
     $(".alerta-insert").delay(1000).slideUp(1000);
     $('#identificador').mask('Z',{translation: {'Z': {pattern: /[a-zA-Z ]/, recursive: true}}});
