@@ -9,7 +9,7 @@
                     <label>Identificador</label>
                 <select class="form-control" name="identificador">
                     {% for nome_id in todos_id %}
-                    {% if request.session.identificador == nome_id.nome_id%}
+                    {% if request.GET.identificador == nome_id.nome_id%}
                     <option selected>{{ nome_id }}</option>
                     {% else %}
                     <option>{{ nome_id }}</option>
@@ -20,31 +20,31 @@
             <div class="col">
                     <label>Nome</label>
                 <input class="form-control nome" name="nome" type="text"
-                    value="{{ request.session.nome }}" required />
+                    value="{{ request.GET.nome }}" required />
             </div>
         </div>
         <div class="form-row mt-3">
             <div class="col">
                     <label>Cracha</label>
                 <input class="form-control cracha" name="cracha" type="text"
-                    value="{{ request.session.cracha }}" required />
+                    value="{{ request.GET.cracha }}" required />
             </div>
             <div class="col">
                     <label>Matricula</label>
                 <input class="form-control matricula" name="matricula" type="text" 
-                    value="{{ request.session.matricula }}" required />
+                    value="{{ request.GET.matricula }}" required />
             </div>
             <div class="col">
                     <label>Ano Entrada</label>
                 <input class="form-control ano" name="ano" type="text" 
-                    value="{{ request.session.ano }}" required />
+                    value="{{ request.GET.ano }}" required />
             </div>
             <div class="col ml-3">
                 <h3 class="ml-3">Ativo?</h3>
                 <div class="form-check form-check-inline">
-                    {% if request.session.ativo == 'S' %}
+                    {% if request.GET.ativo == 'S' %}
                         <input class="form-check-input" type="radio" name="ativo" value="S" checked>
-                    {% elif 'ativo' not in request.session %}
+                    {% elif not request.GET.ativo %}
                         <input class="form-check-input" type="radio" name="ativo" value="S" checked>
                     {% else %}
                         <input class="form-check-input" type="radio" name="ativo" value="S" >
@@ -52,7 +52,7 @@
                     <label class="form-check-label">SIM</label>
                 </div>
                 <div class="form-check form-check-inline">
-                        {% if request.session.ativo == 'N' %}
+                        {% if request.GET.ativo == 'N' %}
                     <input class="form-check-input" type="radio" name="ativo" value="N" checked>
                     {% else %}
                     <input class="form-check-input" type="radio" name="ativo" value="N" >

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models import Max
 from IFPRAcessoMain.models import Identificador, Pessoa
 
 
@@ -13,13 +14,6 @@ def pesquisaPessoa(request):
     """
     Tela inicial pesquisa
     """
-    if 'nome' in request.session:
-        del request.session['nome']
-        del request.session['cracha']
-        del request.session['matricula']
-        del request.session['ano']
-        del request.session['identificador']
-        del request.session['ativo']
     todos_id = Identificador.objects.all().order_by('nome_id')
     """If para tratar caso algo seja pesquisado"""
     if request.method == 'POST':
@@ -77,6 +71,7 @@ def insertId(request):
     if request.method == 'POST':
         id_post = Identificador(nome_id=request.POST.get('identificador'))
         id_post.nome_id = id_post.nome_id.upper()
+        id_post.id = Identificador.objects.latest('pk').pk+1
         try:
             id_post.save()
             messages.success(request, 'Identificador inserido com sucesso')
@@ -116,6 +111,7 @@ def insertPessoa(request):
     if request.method == 'POST':
         """Recebe dados do Form e tenta salvar"""
         pessoa = Pessoa()
+        pessoa.id = Pessoa.objects.latest('pk').pk+1
         pessoa.nome_pessoa = request.POST.get('nome').upper()
         pessoa.id_pessoa = Identificador.objects.get(nome_id=request.POST.get('identificador'))
         pessoa.cracha_pessoa = request.POST.get('cracha')
@@ -124,7 +120,7 @@ def insertPessoa(request):
         pessoa.ativo = request.POST.get('ativo')
         try:
             pessoa.save()
-            messages.success(request, 'Pessoa inserida com sucesso. Aguarde, você será redirecionado automaticamente')
+            messages.success(request, 'Pessoa inserida com sucesso.')
         except Exception as e:
             """Caso o nome, cracha ou matricula já existam, retornar um erro"""
             if isinstance(e, IntegrityError):
@@ -139,13 +135,14 @@ def insertPessoa(request):
             else:
                 messages.error(request, 'Ocorreu um problema no cadastro da Pessoa')
             """ Salvar os dados inseridos para retorná-los à tela para facilitar correção"""
-            request.session['nome'] = pessoa.nome_pessoa
-            request.session['cracha'] = pessoa.cracha_pessoa
-            request.session['matricula'] = pessoa.matricula_pessoa
-            request.session['ano'] = pessoa.ano_entrada
-            request.session['identificador'] = str(pessoa.id_pessoa)
-            request.session['ativo'] = pessoa.ativo
-    return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
+        return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
+    else:
+        return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
 
 @login_required
 def updatePessoa(request):
@@ -165,7 +162,7 @@ def updatePessoa(request):
         pessoa.ativo = request.POST.get('ativo')
         try:
             pessoa.save()
-            messages.success(request, 'Pessoa inserida com sucesso. Aguarde, você será redirecionado automaticamente')
+            messages.success(request, 'Pessoa alterada com sucesso.')
         except Exception as e:
             """Caso o nome, cracha ou matricula inseridos já existam, retornar um erro"""
             if isinstance(e, IntegrityError):
