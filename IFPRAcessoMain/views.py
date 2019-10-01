@@ -118,6 +118,12 @@ def insertPessoa(request):
         pessoa.matricula_pessoa = request.POST.get('matricula')
         pessoa.ano_entrada = request.POST.get('ano')
         pessoa.ativo = request.POST.get('ativo')
+        if request.POST.get('identificador') is None:
+            messages.error(request, 'Um identificador deve ser selecionado')
+            return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
+        if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
+            messages.error(request, 'Cracha e matrícula não devem ser iguais')
+            return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
         try:
             pessoa.save()
             messages.success(request, 'Pessoa inserida com sucesso.')
@@ -134,7 +140,7 @@ def insertPessoa(request):
                 messages.error(request, erro+" |")
             else:
                 messages.error(request, 'Ocorreu um problema no cadastro da Pessoa')
-            """ Salvar os dados inseridos para retorná-los à tela para facilitar correção"""
+        """ Salvar os dados inseridos para retorná-los à tela para facilitar correção"""
         return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
                                         "&nome="+pessoa.nome_pessoa+
                                         "&cracha="+pessoa.cracha_pessoa+
@@ -160,6 +166,9 @@ def updatePessoa(request):
         pessoa.matricula_pessoa = request.POST.get('matricula')
         pessoa.ano_entrada = request.POST.get('ano')
         pessoa.ativo = request.POST.get('ativo')
+        if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
+            messages.error(request, 'Cracha e matrícula não devem ser iguais')
+            return render(request, "IFPRAcessoMain/updatePessoa.html", {'todos_id':todos_id})
         try:
             pessoa.save()
             messages.success(request, 'Pessoa alterada com sucesso.')
