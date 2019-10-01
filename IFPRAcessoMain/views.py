@@ -120,10 +120,20 @@ def insertPessoa(request):
         pessoa.ativo = request.POST.get('ativo')
         if request.POST.get('identificador') is None:
             messages.error(request, 'Um identificador deve ser selecionado')
-            return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
+            return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
         if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
             messages.error(request, 'Cracha e matrícula não devem ser iguais')
-            return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
+            return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
         try:
             pessoa.save()
             messages.success(request, 'Pessoa inserida com sucesso.')
@@ -168,7 +178,12 @@ def updatePessoa(request):
         pessoa.ativo = request.POST.get('ativo')
         if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
             messages.error(request, 'Cracha e matrícula não devem ser iguais')
-            return render(request, "IFPRAcessoMain/updatePessoa.html", {'todos_id':todos_id})
+            return HttpResponseRedirect("/pessoa/update/?identificador="+pessoa.id_pessoa.nome_id+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
         try:
             pessoa.save()
             messages.success(request, 'Pessoa alterada com sucesso.')
