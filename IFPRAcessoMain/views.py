@@ -141,15 +141,19 @@ def insertPessoa(request):
                 'Connection': "keep-alive",
                 'cache-control': "no-cache"
                 }
-            print("Começou")
-            response = requests.request("GET", url, headers=headers, params=entra)
-            print(response.status_code)
-            time.sleep(2)
-            print("fazendo")
-            response = requests.request("GET", url, headers=headers, params=insere24)
-            time.sleep(2)
-            print("termina")
-            response = requests.request("GET", url, headers=headers, params=sai)
+            if requests.get("http://172.17.150.2/").status_code == 200:
+                print("Começou")
+                response = requests.request("GET", url, headers=headers, params=entra)
+                print(response.status_code)
+                time.sleep(2)
+                print("fazendo")
+                response = requests.request("GET", url, headers=headers, params=insere24)
+                time.sleep(2)
+                print("termina")
+                response = requests.request("GET", url, headers=headers, params=sai)
+                messages.success(request, 'Catraca 2 ok')
+            else:
+                messages.error(request, 'Catraca 2 FAIL')
             messages.success(request, 'Pessoa inserida com sucesso.')
         except Exception as e:
             """Caso o nome, cracha ou matricula já existam, retornar um erro"""
