@@ -1,4 +1,4 @@
 django
 django-widget-tweaks
 psycopg2-binary
-requests[security]==2.7.0
+requests
