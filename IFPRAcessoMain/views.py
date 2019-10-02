@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models import Max
 from IFPRAcessoMain.models import Identificador, Pessoa
-
+import requests
+import time
 
 
 @login_required
@@ -71,7 +72,7 @@ def insertId(request):
     if request.method == 'POST':
         id_post = Identificador(nome_id=request.POST.get('identificador'))
         id_post.nome_id = id_post.nome_id.upper()
-        id_post.id = Identificador.objects.latest('pk').pk+1
+        #id_post.id = Identificador.objects.latest('pk').pk+1
         try:
             id_post.save()
             messages.success(request, 'Identificador inserido com sucesso')
@@ -111,21 +112,13 @@ def insertPessoa(request):
     if request.method == 'POST':
         """Recebe dados do Form e tenta salvar"""
         pessoa = Pessoa()
-        pessoa.id = Pessoa.objects.latest('pk').pk+1
+        #pessoa.id = Pessoa.objects.latest('pk').pk+1
         pessoa.nome_pessoa = request.POST.get('nome').upper()
         pessoa.id_pessoa = Identificador.objects.get(nome_id=request.POST.get('identificador'))
         pessoa.cracha_pessoa = request.POST.get('cracha')
         pessoa.matricula_pessoa = request.POST.get('matricula')
         pessoa.ano_entrada = request.POST.get('ano')
         pessoa.ativo = request.POST.get('ativo')
-        if request.POST.get('identificador') is None:
-            messages.error(request, 'Um identificador deve ser selecionado')
-            return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
-                                        "&nome="+pessoa.nome_pessoa+
-                                        "&cracha="+pessoa.cracha_pessoa+
-                                        "&matricula="+pessoa.matricula_pessoa+
-                                        "&ano="+pessoa.ano_entrada+
-                                        "&ativo="+pessoa.ativo)
         if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
             messages.error(request, 'Cracha e matrícula não devem ser iguais')
             return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
@@ -136,6 +129,27 @@ def insertPessoa(request):
                                         "&ativo="+pessoa.ativo)
         try:
             pessoa.save()
+            url = "http://172.17.150.2/rep.html"
+            entra = {"pgCode":"7","opType":"1","lblId":"0", "lblLogin":"primmesf","lblPass":"121314"}
+            insere24 = {"pgCode":"6","opType":"1","lblId":"-1","lblNameUser":pessoa.nome_pessoa,"lblCardID":pessoa.matricula_pessoa,"lblRef1":pessoa.cracha_pessoa,"lblRef2":"","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
+            sai = {"pgCode":"7","opType":"2","lblId":"0"}
+            headers = {
+                'Accept': "*/*",
+                'Cache-Control': "no-cache",
+                'Host': "172.17.150.2",
+                'Accept-Encoding': "gzip, deflate",
+                'Connection': "keep-alive",
+                'cache-control': "no-cache"
+                }
+            print("Começou")
+            response = requests.request("GET", url, headers=headers, params=entra)
+            print(response.status_code)
+            time.sleep(2)
+            print("fazendo")
+            response = requests.request("GET", url, headers=headers, params=insere24)
+            time.sleep(2)
+            print("termina")
+            response = requests.request("GET", url, headers=headers, params=sai)
             messages.success(request, 'Pessoa inserida com sucesso.')
         except Exception as e:
             """Caso o nome, cracha ou matricula já existam, retornar um erro"""

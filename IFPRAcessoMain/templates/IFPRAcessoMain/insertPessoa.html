@@ -7,7 +7,7 @@
         <div class="form-row">
             <div class="form-group col-5">
                     <label>Identificador</label>
-                <select class="form-control" name="identificador">
+                <select class="form-control" name="identificador" required>
                     {% for nome_id in todos_id %}
                     {% if request.GET.identificador == nome_id.nome_id%}
                     <option selected>{{ nome_id }}</option>

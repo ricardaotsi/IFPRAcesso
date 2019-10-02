@@ -9,5 +9,5 @@ RUN pip install --upgrade pip
 ADD requirements.txt /webapps/
 RUN pip install -r requirements.txt
 ADD . /webapps/
-# Django service
+# # Django service
 EXPOSE 8000
