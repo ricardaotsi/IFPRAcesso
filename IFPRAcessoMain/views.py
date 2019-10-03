@@ -7,7 +7,6 @@ from django.db import IntegrityError
 from django.db.models import Max
 from IFPRAcessoMain.models import Identificador, Pessoa
 import requests
-import time
 
 
 @login_required
@@ -72,7 +71,6 @@ def insertId(request):
     if request.method == 'POST':
         id_post = Identificador(nome_id=request.POST.get('identificador'))
         id_post.nome_id = id_post.nome_id.upper()
-        #id_post.id = Identificador.objects.latest('pk').pk+1
         try:
             id_post.save()
             messages.success(request, 'Identificador inserido com sucesso')
@@ -103,6 +101,48 @@ def deleteId(request):
     }
     return JsonResponse(data)
 
+def insereCatraca(url, headers, q1, q2, q3):
+    """Função para adicionar registros nas catracas"""
+    if requests.request("GET", url, headers=headers, params=q1).status_code == 200:
+        if requests.request("GET", url, headers=headers, params=q2).status_code == 200:
+            #requests.request("GET", url, headers=headers, params=q3)
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def catraca(nome_pessoa, matricula_pessoa, cracha_pessoa):
+    url = {"1": "http://172.17.150.1", 
+            "2": "http://172.17.150.2/rep.html",
+            "3": "http://172.17.150.3", 
+            "4": "http://172.17.150.4"}
+    entra = {"pgCode":"7","opType":"1","lblId":"0", "lblLogin":"primmesf","lblPass":"121314"}
+    insere13 = {"13304":"","pgCode":"6","opType":"1","lblId":"-1","lb01":nome_pessoa,"lb02":matricula_pessoa,"lb03":cracha_pessoa,"lb04":"","lb05":"","lb06":"","lb07":"","lb08":"","chkVerDig":"on","cb00":"1","cb01":"1"}
+    insere24 = {"pgCode":"6","opType":"1","lblId":"-1","lblNameUser":nome_pessoa,"lblCardID":matricula_pessoa,"lblRef1":cracha_pessoa,"lblRef2":"","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
+    sai = {"pgCode":"7","opType":"2","lblId":"0"}
+    headers = {
+        'Accept': "*/*",
+        'Cache-Control': "no-cache",
+        'Host': "172.17.150.2",
+        'Accept-Encoding': "gzip, deflate",
+        'Connection': "keep-alive",
+        'cache-control': "no-cache"
+        }
+    response = list()
+    for index in url:
+        if index == "2" or index == "4":
+            if insereCatraca(url[index],headers,entra,insere24,sai):
+                response.append('Registro inserido na Catraca '+index)
+            else:
+                response.append('Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
+        # else:
+        #     if insereCatraca(url[index], headers, entra, insere13, sai):
+        #         messages.success(request, 'Registro inserido na Catraca '+index)
+        #     else:
+        #         messages.error(request, 'Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
+    return response
+  
 @login_required
 def insertPessoa(request):
     """
@@ -112,7 +152,6 @@ def insertPessoa(request):
     if request.method == 'POST':
         """Recebe dados do Form e tenta salvar"""
         pessoa = Pessoa()
-        #pessoa.id = Pessoa.objects.latest('pk').pk+1
         pessoa.nome_pessoa = request.POST.get('nome').upper()
         pessoa.id_pessoa = Identificador.objects.get(nome_id=request.POST.get('identificador'))
         pessoa.cracha_pessoa = request.POST.get('cracha')
@@ -127,34 +166,32 @@ def insertPessoa(request):
                                         "&matricula="+pessoa.matricula_pessoa+
                                         "&ano="+pessoa.ano_entrada+
                                         "&ativo="+pessoa.ativo)
+        elif Pessoa.objects.filter(matricula_pessoa=pessoa.cracha_pessoa).exists():
+            messages.error(request, 'Cracha não pode ser igual a uma matrícula já cadastrada')
+            return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
+        elif Pessoa.objects.filter(cracha_pessoa=pessoa.matricula_pessoa).exists():
+            messages.error(request, 'Matricula não pode ser igual a um cracha já cadastrado')
+            return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
         try:
             pessoa.save()
-            url = "http://172.17.150.2/rep.html"
-            entra = {"pgCode":"7","opType":"1","lblId":"0", "lblLogin":"primmesf","lblPass":"121314"}
-            insere24 = {"pgCode":"6","opType":"1","lblId":"-1","lblNameUser":pessoa.nome_pessoa,"lblCardID":pessoa.matricula_pessoa,"lblRef1":pessoa.cracha_pessoa,"lblRef2":"","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
-            sai = {"pgCode":"7","opType":"2","lblId":"0"}
-            headers = {
-                'Accept': "*/*",
-                'Cache-Control': "no-cache",
-                'Host': "172.17.150.2",
-                'Accept-Encoding': "gzip, deflate",
-                'Connection': "keep-alive",
-                'cache-control': "no-cache"
-                }
-            if requests.get("http://172.17.150.2/").status_code == 200:
-                print("Começou")
-                response = requests.request("GET", url, headers=headers, params=entra)
-                print(response.status_code)
-                time.sleep(2)
-                print("fazendo")
-                response = requests.request("GET", url, headers=headers, params=insere24)
-                time.sleep(2)
-                print("termina")
-                response = requests.request("GET", url, headers=headers, params=sai)
-                messages.success(request, 'Catraca 2 ok')
-            else:
-                messages.error(request, 'Catraca 2 FAIL')
             messages.success(request, 'Pessoa inserida com sucesso.')
+            #Insere registros nas catracas usando requests
+            response = catraca(pessoa.nome_pessoa,pessoa.matricula_pessoa,pessoa.cracha_pessoa)
+            for r in response:
+                if "inserido" in r:
+                    messages.success(request, r)
+                else:
+                    messages.error(request, r)
         except Exception as e:
             """Caso o nome, cracha ou matricula já existam, retornar um erro"""
             if isinstance(e, IntegrityError):
@@ -197,6 +234,22 @@ def updatePessoa(request):
         if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
             messages.error(request, 'Cracha e matrícula não devem ser iguais')
             return HttpResponseRedirect("/pessoa/update/?identificador="+pessoa.id_pessoa.nome_id+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
+        elif Pessoa.objects.filter(matricula_pessoa=pessoa.cracha_pessoa).exists():
+            messages.error(request, 'Cracha não pode ser igual a uma matrícula já cadastrada')
+            return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
+        elif Pessoa.objects.filter(cracha_pessoa=pessoa.matricula_pessoa).exists():
+            messages.error(request, 'Matricula não pode ser igual a um cracha já cadastrado')
+            return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
                                         "&nome="+pessoa.nome_pessoa+
                                         "&cracha="+pessoa.cracha_pessoa+
                                         "&matricula="+pessoa.matricula_pessoa+
