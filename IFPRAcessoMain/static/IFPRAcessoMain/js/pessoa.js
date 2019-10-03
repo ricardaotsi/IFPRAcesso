@@ -7,3 +7,7 @@ $(document).ready(function () {
     $('.cracha').mask("00000000");
     $('.nome').mask('Z',{translation: {'Z': {pattern: /[a-zA-Z ]/, recursive: true}}});
 });
+
+$(".pessoa").submit(function(event){
+    $(".btn-pessoa").append("  <span class='spinner-border spinner-border-sm'></span>");
+});

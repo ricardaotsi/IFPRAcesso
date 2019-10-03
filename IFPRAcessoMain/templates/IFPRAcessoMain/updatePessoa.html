@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="container bg-white mt-3">
-    <form class="mt-3" method="POST">
+    <form class="mt-3 pessoa" method="POST">
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-5">
@@ -60,7 +60,7 @@
             </div>
         </div>
         <div class="mt-3 mb-3 text-center">
-            <button type="submit" class="btn btn-index text-center">Alterar</button>
+            <button type="submit" class="btn-pessoa btn btn-index text-center">Alterar</button>
         </div>
     </form>
     <div class="text-center">

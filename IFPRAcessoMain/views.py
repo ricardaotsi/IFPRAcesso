@@ -7,6 +7,8 @@ from django.db import IntegrityError
 from django.db.models import Max
 from IFPRAcessoMain.models import Identificador, Pessoa
 import requests
+from bs4 import BeautifulSoup
+import re
 
 
 @login_required
@@ -105,14 +107,35 @@ def insereCatraca(url, headers, q1, q2, q3):
     """Função para adicionar registros nas catracas"""
     if requests.request("GET", url, headers=headers, params=q1).status_code == 200:
         if requests.request("GET", url, headers=headers, params=q2).status_code == 200:
-            #requests.request("GET", url, headers=headers, params=q3)
+            requests.request("GET", url, headers=headers, params=q3)
             return True
         else:
             return False
     else:
         return False
 
-def catraca(nome_pessoa, matricula_pessoa, cracha_pessoa):
+def alteraCatraca(url, headers, q1, q2, q3,nome,matricula, cracha):
+    """Função para alterar registros nas catracas"""
+    if requests.request("GET", url, headers=headers, params=q1).status_code == 200:
+        response = requests.request("GET", url, headers=headers, params=q2)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            #Find the last <a> element and get it's onclick function. From onClick function get it's last parameter that is int
+            idCatraca = re.findall(r'\d+', soup.find_all('a')[-1]['onclick'])[-1]
+            altera = {"pgCode":"6","opType":"1","lblId":idCatraca,"lblNameUser":nome,"lblCardID":matricula,"lblRef1":cracha,"lblRef2":"0","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
+            if requests.request("GET", url, headers=headers, params=altera).status_code == 200:
+                requests.request("GET", url, headers=headers, params=q3)
+                return True
+            else:
+                return False
+        else:
+            return False
+    else:
+        return False
+            
+
+def catraca(nome_pessoa, matricula_pessoa, cracha_pessoa, tipo):
+    """Função para adicionar ou alterar registros nas catracas"""
     url = {"1": "http://172.17.150.1", 
             "2": "http://172.17.150.2/rep.html",
             "3": "http://172.17.150.3", 
@@ -120,6 +143,7 @@ def catraca(nome_pessoa, matricula_pessoa, cracha_pessoa):
     entra = {"pgCode":"7","opType":"1","lblId":"0", "lblLogin":"primmesf","lblPass":"121314"}
     insere13 = {"13304":"","pgCode":"6","opType":"1","lblId":"-1","lb01":nome_pessoa,"lb02":matricula_pessoa,"lb03":cracha_pessoa,"lb04":"","lb05":"","lb06":"","lb07":"","lb08":"","chkVerDig":"on","cb00":"1","cb01":"1"}
     insere24 = {"pgCode":"6","opType":"1","lblId":"-1","lblNameUser":nome_pessoa,"lblCardID":matricula_pessoa,"lblRef1":cracha_pessoa,"lblRef2":"","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
+    pesquisa = {"pgCode":"12","opType":"1","lblId":"-1","lblRegistration":matricula_pessoa,"lblName":""}
     sai = {"pgCode":"7","opType":"2","lblId":"0"}
     headers = {
         'Accept': "*/*",
@@ -130,17 +154,25 @@ def catraca(nome_pessoa, matricula_pessoa, cracha_pessoa):
         'cache-control': "no-cache"
         }
     response = list()
-    for index in url:
-        if index == "2" or index == "4":
-            if insereCatraca(url[index],headers,entra,insere24,sai):
-                response.append('Registro inserido na Catraca '+index)
-            else:
-                response.append('Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
-        # else:
-        #     if insereCatraca(url[index], headers, entra, insere13, sai):
-        #         messages.success(request, 'Registro inserido na Catraca '+index)
-        #     else:
-        #         messages.error(request, 'Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
+    if tipo == "insere":
+        for index in url:
+            if index == "2" or index == "4":
+                if insereCatraca(url[index],headers,entra,insere24,sai):
+                    response.append('Registro inserido na Catraca '+index)
+                else:
+                    response.append('Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
+            # else:
+            #     if insereCatraca(url[index], headers, entra, insere13, sai):
+            #         messages.success(request, 'Registro inserido na Catraca '+index)
+            #     else:
+            #         messages.error(request, 'Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
+    if tipo == "altera":
+        for index in url:
+            if index == "2" or index == "4":
+                if alteraCatraca(url[index],headers,entra,pesquisa,sai, nome_pessoa, matricula_pessoa, cracha_pessoa):
+                    response.append('Registro alterado na Catraca '+index)
+                else:
+                    response.append('Houve um problema de alteração na Catraca'+index+'. Altere manualmente.')
     return response
   
 @login_required
@@ -186,7 +218,7 @@ def insertPessoa(request):
             pessoa.save()
             messages.success(request, 'Pessoa inserida com sucesso.')
             #Insere registros nas catracas usando requests
-            response = catraca(pessoa.nome_pessoa,pessoa.matricula_pessoa,pessoa.cracha_pessoa)
+            response = catraca(pessoa.nome_pessoa,pessoa.matricula_pessoa,pessoa.cracha_pessoa, "insere")
             for r in response:
                 if "inserido" in r:
                     messages.success(request, r)
@@ -258,6 +290,13 @@ def updatePessoa(request):
         try:
             pessoa.save()
             messages.success(request, 'Pessoa alterada com sucesso.')
+            #Altera registros nas catracas usando requests
+            response = catraca(pessoa.nome_pessoa,pessoa_salva.matricula_pessoa,pessoa.cracha_pessoa, "altera")
+            for r in response:
+                if "alterado" in r:
+                    messages.success(request, r)
+                else:
+                    messages.error(request, r)
         except Exception as e:
             """Caso o nome, cracha ou matricula inseridos já existam, retornar um erro"""
             if isinstance(e, IntegrityError):
