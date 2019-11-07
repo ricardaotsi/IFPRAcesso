@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^pessoa/update/$', views.updatePessoa, name='updatePessoa'),
     url(r'^ajax/deleteId/$', views.deleteId, name='deleteId'),
     url(r'^ajax/update_session/$', views.update_session, name='update_session'),
+    url(r'^upload/registros/$', views.uploadRegistry, name='uploadRegistry'),
 ]

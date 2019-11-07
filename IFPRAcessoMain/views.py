@@ -342,3 +342,11 @@ def update_session(request):
             'resultado':resultado
         }
         return JsonResponse(data)
+
+@login_required
+def uploadRegistry(request):
+    """
+    Tela upload de Registros
+    Guarda os registros no banco para fácil acesso
+    """
+    return render(request, "IFPRAcessoMain/uploadRegistry.html")
