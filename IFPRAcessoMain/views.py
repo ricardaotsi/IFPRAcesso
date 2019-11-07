@@ -349,4 +349,11 @@ def uploadRegistry(request):
     Tela upload de Registros
     Guarda os registros no banco para fácil acesso
     """
+    if request.method == 'POST' and request.FILES['registry']:
+        registry = []
+        for line in request.FILES['registry']:
+            registry = line.strip().decode("utf-8").split("[")
+            print(registry[3])
+            #registry.append(line.strip())
+        #print(registry)
     return render(request, "IFPRAcessoMain/uploadRegistry.html")
