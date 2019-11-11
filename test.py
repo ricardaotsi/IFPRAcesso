@@ -18,20 +18,29 @@ def textFormat (data):
         aux += BYTE_END#Inserindo byte Final
         return aux
 
-TCP_IP = '172.17.150.1'
+TCP_IP = ['172.17.150.1',
+                '172.17.150.2',
+                '172.17.150.3',
+                '172.17.150.4']
 TCP_PORT = 3000
 BUFFER_SIZE = 1024
-MESSAGE = "01+ECAR+00+1+I[23456[23456[[[1[1[1[[[[W[2[1[1[0[[0[TESTE[123321["
+MESSAGE = "01+ECAR+00+1+E[654321[654321[[[1[1[1[[[[W[2[1[1[0[[0[TESTE[123456["
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((TCP_IP, TCP_PORT))
-try:
-    s.send(textFormat(MESSAGE).encode())
-    data = s.recv(BUFFER_SIZE)
-except Exception as e:
-    print(e)
-s.close()
-print(data.decode())
+for ip in TCP_IP:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            s.connect((ip, TCP_PORT))
+            s.send(textFormat(MESSAGE).encode())
+            data = s.recv(BUFFER_SIZE).decode()
+            
+            if data.split("+")[4].startswith("0*"):
+                print("certo")
+            else:
+                print("errado")
+        except Exception as e:
+            print(e)
+            print("errado")
+        s.close()
 
 
 

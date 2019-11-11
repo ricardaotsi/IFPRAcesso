@@ -27,12 +27,12 @@
             <div class="col">
                     <label>Cracha</label>
                 <input class="form-control cracha" name="cracha" type="text"
-                    value="{{ request.GET.cracha }}" required />
+                    value="{{ request.GET.cracha }}" pattern=".{3,}" required />
             </div>
             <div class="col">
                     <label>Matricula</label>
                 <input class="form-control matricula" name="matricula" type="text" 
-                    value="{{ request.GET.matricula }}" required />
+                    value="{{ request.GET.matricula }}" pattern=".{3,}" required />
             </div>
             <div class="col">
                     <label>Ano Entrada</label>

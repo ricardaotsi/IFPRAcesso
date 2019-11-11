@@ -6,10 +6,7 @@ from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models import Max
 from IFPRAcessoMain.models import Identificador, Pessoa
-# import requests
-# from bs4 import BeautifulSoup
-# import re
-
+import socket
 
 @login_required
 def pesquisaPessoa(request):
@@ -103,83 +100,58 @@ def deleteId(request):
     }
     return JsonResponse(data)
 
-#def insereCatraca(url, headers, q1, q2, q3):
-    # """Função para adicionar registros nas catracas"""
-    # if requests.request("GET", url, headers=headers, params=q1).status_code == 200:
-    #     if requests.request("GET", url, headers=headers, params=q2).status_code == 200:
-    #         requests.request("GET", url, headers=headers, params=q3)
-    #         return True
-    #     else:
-    #         return False
-    # else:
-    #     return False
+def textFormat(data):
+    aux2=""
+    BYTE_TAM=[]
+    BYTE_INIT = chr(int("2", base=16))#conf. bit inicial
+    BYTE_END = chr(int("3", base=16))#conf. bit final
+    BYTE_TAM.append(chr(len(data)))#conf. tamanho dos dados
+    BYTE_TAM.append(chr(int("0", base=16)))
+    aux2 += BYTE_INIT#Inserindo byte inicial
+    aux2 += BYTE_TAM[0]#Inserindo byte do tamanho
+    aux2 += BYTE_TAM[1]
+    aux = aux2+data# concatenando com a informação
+    BYTE_CKSUM = aux[1]#Calculo do Checksum
+    for a in range(2,len(aux)):
+        BYTE_CKSUM = chr(ord(BYTE_CKSUM) ^ ord(aux[a]))
+    aux += BYTE_CKSUM#Inserindo Checksum
+    aux += BYTE_END#Inserindo byte Final
+    return aux
 
-#def alteraCatraca(url, headers, q1, q2, q3,nome,matricula, cracha):
-    # """Função para alterar registros nas catracas"""
-    # if requests.request("GET", url, headers=headers, params=q1).status_code == 200:
-    #     response = requests.request("GET", url, headers=headers, params=q2)
-    #     if response.status_code == 200:
-    #         soup = BeautifulSoup(response.text, 'html.parser')
-    #         #Find the last <a> element and get it's onclick function. From onClick function get it's last parameter that is int
-    #         idCatraca = re.findall(r'\d+', soup.find_all('a')[-1]['onclick'])[-1]
-    #         deleta = {"pgCode":"6","opType":"2","lblId":idCatraca,"lblNameUser":nome,"lblCardID":matricula,"lblRef1":cracha,"lblRef2":"0","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
-    #         #altera = {"pgCode":"6","opType":"1","lblId":idCatraca,"lblNameUser":nome,"lblCardID":matricula,"lblRef1":cracha,"lblRef2":"0","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
-    #         if requests.request("GET", url, headers=headers, params=deleta).status_code == 200:
-    #             requests.request("GET", url, headers=headers, params=q3)
-    #             return True
-    #         else:
-    #             return False
-    #     else:
-    #         return False
-    # else:
-    #     return False
-            
-#def catraca(nome_pessoa, matricula_pessoa, cracha_pessoa, tipo):
-    # """Função para adicionar ou alterar registros nas catracas"""
-    # url = {"1": "http://172.17.150.1/rep.html", 
-    #         "2": "http://172.17.150.2/rep.html",
-    #         "3": "http://172.17.150.3/rep.html", 
-    #         "4": "http://172.17.150.4/rep.html"}
-    # entra = {"pgCode":"7","opType":"1","lblId":"0", "lblLogin":"primmesf","lblPass":"121314"}
-    # insere13 = {"pgCode":"6","opType":"1","lblId":"-1","lb01":nome_pessoa,"lb02":matricula_pessoa,"lb03":cracha_pessoa,"lb04":"","lb05":"","lb06":"","lb07":"","lb08":"","chkVerDig":"on","cb00":"1","cb01":"0"}
-    # insere24 = {"pgCode":"6","opType":"1","lblId":"-1","lblNameUser":nome_pessoa,"lblCardID":matricula_pessoa,"lblRef1":cracha_pessoa,"lblRef2":"","lblValIni":"","lblValFim":"","lblAcPass":"","lblPass":"","chkVerDig":"on","cbxCardType":"1","cbxAccessType":"1"}
-    # pesquisa = {"pgCode":"12","opType":"1","lblId":"-1","lblRegistration":matricula_pessoa,"lblName":""}
-    # sai = {"pgCode":"7","opType":"2","lblId":"0"}
-    # headers = {
-    #     'Accept': "*/*",
-    #     'Cache-Control': "no-cache",
-    #     'Host': "172.17.150.2",
-    #     'Accept-Encoding': "gzip, deflate",
-    #     'Connection': "keep-alive",
-    #     'cache-control': "no-cache"
-    #     }
-    # response = list()
-    # if tipo == "insere":
-    #     for index in url:
-    #         if index == "1" or index == "3":
-    #             if insereCatraca(url[index], headers, entra, insere13, sai):
-    #                 response.append('Registro inserido na Catraca '+index)
-    #             else:
-    #                 response.append('Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
-    #         if index == "2" or index == "4":
-    #             if insereCatraca(url[index],headers,entra,insere24,sai):
-    #                 response.append('Registro inserido na Catraca '+index)
-    #             else:
-    #                 response.append('Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
-    #         else:
-    #             if insereCatraca(url[index], headers, entra, insere13, sai):
-    #                 response.append('Registro inserido na Catraca '+index)
-    #             else:
-    #                 response.append('Houve um problema de cadastro na Catraca'+index+'. Cadastre manualmente.')
-    # if tipo == "altera":
-    #     for index in url:
-    #         if index == "2" or index == "4":
-    #             if alteraCatraca(url[index],headers,entra,pesquisa,sai, nome_pessoa, matricula_pessoa, cracha_pessoa):
-    #                 response.append('Registro alterado na Catraca '+index)
-    #             else:
-    #                 response.append('Houve um problema de alteração na Catraca'+index+'. Altere manualmente.')
-    # return response
-  
+def catraca(matricula, nome, cracha, operacao):
+    TCP_IP = ['172.17.150.1',
+                '172.17.150.2',
+                '172.17.150.3',
+                '172.17.150.4']
+    TCP_PORT = 3000
+    BUFFER_SIZE = 1024
+    MESSAGE = "01+ECAR+00+1+"+operacao+"["+str(matricula)+"["+str(matricula)+"[[[1[1[1[[[[W[2[1[1[0[[0["+nome+"["+str(cracha)+"["
+    response = []
+    for ip in TCP_IP:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            s.connect((ip, TCP_PORT))
+            s.send(textFormat(MESSAGE).encode())
+            data = s.recv(BUFFER_SIZE).decode()
+            if data.split("+")[4].startswith("0*"):
+                if operacao == "I":
+                    response.append('Registro inserido com sucesso na Catraca '+ip[-1])
+                elif operacao == "A":
+                    response.append('Registro alterado com sucesso na Catraca '+ip[-1])
+                elif operacao == "E":
+                    response.append('Registro removido com sucesso na Catraca '+ip[-1])
+            else:
+                if operacao == "I":
+                    response.append('Houve um problema de cadastro na Catraca '+ip[-1]+'. Cadastre manualmente')
+                elif operacao == "A":
+                    response.append('Houve um problema de alteração na Catraca '+ip[-1]+'. Altere manualmente')
+                elif operacao == "E":
+                    response.append('Houve um problema de remoção na Catraca '+ip[-1]+'. Altere manualmente')
+        except Exception as e:
+            response.append('Catraca '+ip[-1]+' está offline')
+        s.close()
+    return response
+
 @login_required
 def insertPessoa(request):
     """
@@ -222,13 +194,13 @@ def insertPessoa(request):
         try:
             pessoa.save()
             messages.success(request, 'Pessoa inserida com sucesso.')
-            #Insere registros nas catracas usando requests
-            # response = catraca(pessoa.nome_pessoa,pessoa.matricula_pessoa,pessoa.cracha_pessoa, "insere")
-            # for r in response:
-            #     if "inserido" in r:
-            #         messages.success(request, r)
-            #     else:
-            #         messages.error(request, r)
+            #Insere registros nas catracas usando socket
+            response = catraca(pessoa.matricula_pessoa,pessoa.nome_pessoa,pessoa.cracha_pessoa,"I")
+            for r in response:
+                if "inserido" in r:
+                    messages.success(request, r)
+                else:
+                    messages.error(request, r)
         except Exception as e:
             """Caso o nome, cracha ou matricula já existam, retornar um erro"""
             if isinstance(e, IntegrityError):
@@ -265,17 +237,16 @@ def updatePessoa(request):
         pessoa.nome_pessoa = request.POST.get('nome').upper()
         pessoa.id_pessoa = Identificador.objects.get(nome_id=request.POST.get('identificador'))
         pessoa.cracha_pessoa = request.POST.get('cracha')
-        #pessoa.matricula_pessoa = request.POST.get('matricula')
         pessoa.ano_entrada = request.POST.get('ano')
         pessoa.ativo = request.POST.get('ativo')
-        # if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
-        #     messages.error(request, 'Cracha e matrícula não devem ser iguais')
-        #     return HttpResponseRedirect("/pessoa/update/?identificador="+pessoa.id_pessoa.nome_id+
-        #                                 "&nome="+pessoa.nome_pessoa+
-        #                                 "&cracha="+pessoa.cracha_pessoa+
-        #                                 "&matricula="+pessoa.matricula_pessoa+
-        #                                 "&ano="+pessoa.ano_entrada+
-        #                                 "&ativo="+pessoa.ativo)
+        if pessoa.cracha_pessoa == pessoa.matricula_pessoa:
+            messages.error(request, 'Cracha e matrícula não devem ser iguais')
+            return HttpResponseRedirect("/pessoa/update/?identificador="+pessoa.id_pessoa.nome_id+
+                                        "&nome="+pessoa.nome_pessoa+
+                                        "&cracha="+pessoa.cracha_pessoa+
+                                        "&matricula="+pessoa.matricula_pessoa+
+                                        "&ano="+pessoa.ano_entrada+
+                                        "&ativo="+pessoa.ativo)
         if Pessoa.objects.filter(matricula_pessoa=pessoa.cracha_pessoa).exists():
             messages.error(request, 'Cracha não pode ser igual a uma matrícula já cadastrada')
             return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
@@ -284,24 +255,19 @@ def updatePessoa(request):
                                         "&matricula="+str(pessoa.matricula_pessoa)+
                                         "&ano="+pessoa.ano_entrada+
                                         "&ativo="+pessoa.ativo)
-        # elif Pessoa.objects.filter(cracha_pessoa=pessoa.matricula_pessoa).exists():
-        #     messages.error(request, 'Matricula não pode ser igual a um cracha já cadastrado')
-        #     return HttpResponseRedirect("/pessoa/?identificador="+str(pessoa.id_pessoa)+
-        #                                 "&nome="+pessoa.nome_pessoa+
-        #                                 "&cracha="+pessoa.cracha_pessoa+
-        #                                 "&matricula="+pessoa.matricula_pessoa+
-        #                                 "&ano="+pessoa.ano_entrada+
-        #                                 "&ativo="+pessoa.ativo)
         try:
             pessoa.save()
             messages.success(request, 'Pessoa alterada com sucesso.')
-            #Altera registros nas catracas usando requests
-            # response = catraca(pessoa.nome_pessoa,pessoa_salva.matricula_pessoa,pessoa.cracha_pessoa, "altera")
-            # for r in response:
-            #     if "alterado" in r:
-            #         messages.success(request, r)
-            #     else:
-            #         messages.error(request, r)
+            #Altera registros nas catracas usando socket
+            if pessoa.ativo == "S":
+                response = catraca(pessoa.matricula_pessoa,pessoa.nome_pessoa,pessoa.cracha_pessoa,"A")
+            elif pessoa.ativo == "N":
+                response = catraca(pessoa.matricula_pessoa,pessoa.nome_pessoa,pessoa.cracha_pessoa,"E")
+            for r in response:
+                if "alterado" in r or "removido" in r:
+                    messages.success(request, r)
+                else:
+                    messages.error(request, r)
         except Exception as e:
             """Caso o nome, cracha ou matricula inseridos já existam, retornar um erro"""
             if isinstance(e, IntegrityError):
@@ -311,10 +277,7 @@ def updatePessoa(request):
                         erro = erro+' | Pessoa já existe'
                 if Pessoa.objects.filter(cracha_pessoa=pessoa.cracha_pessoa).exists():
                     if int(pessoa.cracha_pessoa) != int(pessoa_salva.cracha_pessoa):
-                        erro = erro+' | Cracha já existe'   
-                # if Pessoa.objects.filter(matricula_pessoa=pessoa.matricula_pessoa).exists():
-                #     if int(pessoa.matricula_pessoa) != int(pessoa_salva.matricula_pessoa):
-                #         erro = erro+' | Matricula já existe'
+                        erro = erro+' | Cracha já existe'
                 messages.error(request, erro+" |")
             else:
                 messages.error(request, 'Ocorreu um problema no cadastro da Pessoa')
