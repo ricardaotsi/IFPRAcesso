@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotAllow
 from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models import Max
-from IFPRAcessoMain.models import Identificador, Pessoa
+from IFPRAcessoMain.models import Identificador, Pessoa, Registro
 import socket
 
 @login_required
@@ -314,9 +314,16 @@ def uploadRegistry(request):
     """
     if request.method == 'POST' and request.FILES['registry']:
         registry = []
+        registro = Registro()
         for line in request.FILES['registry']:
-            registry = line.strip().decode("utf-8").split("[")
-            print(registry[3])
-            #registry.append(line.strip())
-        #print(registry)
+            registry = line.strip().decode().split("[")
+            registro.id_registro = int(registry[0])
+            registro.nr_catraca = request.POST.get("catraca")
+            registro.matricula = int(registry[2])
+            registro.dt_registro = registry[3]
+            registro.operacao = int(registry[4])
+            try:
+                registro.save()
+            except Exception as e:
+                print(e)            
     return render(request, "IFPRAcessoMain/uploadRegistry.html")

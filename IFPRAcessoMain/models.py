@@ -14,3 +14,10 @@ class Pessoa(models.Model):
     ativo = models.CharField(max_length=1, default="S")
     def __str__(self):
         return self.nome_pessoa
+
+class Registro(models.Model):
+    nr_catraca = models.IntegerField()
+    id_registro = models.BigIntegerField()
+    matricula = models.BigIntegerField()
+    dt_registro = models.CharField(max_length=20)
+    operacao = models.IntegerField()

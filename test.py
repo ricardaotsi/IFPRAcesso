@@ -1,4 +1,6 @@
 import socket
+import struct
+import select
 
 def textFormat (data):
         aux2=""
@@ -19,28 +21,40 @@ def textFormat (data):
         return aux
 
 TCP_IP = ['172.17.150.1',
-                '172.17.150.2',
-                '172.17.150.3',
-                '172.17.150.4']
+            '172.17.150.2',
+            '172.17.150.3',
+            '172.17.150.4']
 TCP_PORT = 3000
 BUFFER_SIZE = 1024
 MESSAGE = "01+ECAR+00+1+E[654321[654321[[[1[1[1[[[[W[2[1[1[0[[0[TESTE[123456["
+EVENTO = "01+RR+00+T]30]01"
+data=''
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+try:
+    s.connect((TCP_IP[0], TCP_PORT))
+    s.sendall(textFormat(EVENTO).encode())
+    data+=s.recv(BUFFER_SIZE).decode()
+except Exception as e:
+    print(e)
+s.close()
+print(data)
 
-for ip in TCP_IP:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            s.connect((ip, TCP_PORT))
-            s.send(textFormat(MESSAGE).encode())
-            data = s.recv(BUFFER_SIZE).decode()
+
+# for ip in TCP_IP:
+#         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         try:
+#             s.connect((ip, TCP_PORT))
+#             s.send(textFormat(MESSAGE).encode())
+#             data = s.recv(BUFFER_SIZE).decode()
             
-            if data.split("+")[4].startswith("0*"):
-                print("certo")
-            else:
-                print("errado")
-        except Exception as e:
-            print(e)
-            print("errado")
-        s.close()
+#             if data.split("+")[4].startswith("0*"):
+#                 print("certo")
+#             else:
+#                 print("errado")
+#         except Exception as e:
+#             print(e)
+#             print("errado")
+#         s.close()
 
 
 
