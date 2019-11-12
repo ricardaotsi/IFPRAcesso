@@ -307,23 +307,14 @@ def update_session(request):
         return JsonResponse(data)
 
 @login_required
-def uploadRegistry(request):
+def relatorio(request):
     """
     Tela upload de Registros
     Guarda os registros no banco para fácil acesso
     """
-    # if request.method == 'POST' and request.FILES['registry']:
-    #     registry = []
-    #     registro = Registro()
-    #     for line in request.FILES['registry']:
-    #         registry = line.strip().decode().split("[")
-    #         registro.id_registro = int(registry[0])
-    #         registro.nr_catraca = request.POST.get("catraca")
-    #         registro.matricula = int(registry[2])
-    #         registro.dt_registro = registry[3]
-    #         registro.operacao = int(registry[4])
-    #         try:
-    #             registro.save()
-    #         except Exception as e:
-    #             print(e)            
-    return render(request, "ifpracessomain/uploadRegistry.html")
+    todos_registros = []
+    mat = request.GET.get("matricula")
+    nome = request.GET.get("nome")
+    if Registro.objects.filter(matricula=mat):
+        todos_registros = Registro.objects.filter(matricula=mat)
+    return render(request, "ifpracessomain/relatorio.html", {"registros":todos_registros, "nome":nome})

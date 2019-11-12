@@ -22,4 +22,7 @@ function paginaAtual() {
     if (urlAtual.attr("pathname") == "/") {
         $(".pesquisa").addClass("active");
     };
+    if (urlAtual.attr("pathname").includes("relatorio")) {
+        $(".relatorio").addClass("active");
+    };
 }

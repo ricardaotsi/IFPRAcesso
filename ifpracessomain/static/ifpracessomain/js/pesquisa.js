@@ -67,3 +67,8 @@ $(".alterarpessoa").click(function(){
         },
     });
 });
+
+$(".relatorio").click(function(){
+    var divnome = $(this).parent()[0]
+    window.location.href="/relatorio/?matricula="+divnome.children[3].innerText+"&nome="+divnome.children[1].innerText        
+});
