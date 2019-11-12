@@ -19,5 +19,5 @@ class Registro(models.Model):
     nr_catraca = models.IntegerField()
     id_registro = models.BigIntegerField()
     matricula = models.BigIntegerField()
-    dt_registro = models.CharField(max_length=20)
+    dt_registro = models.DateTimeField()
     operacao = models.IntegerField()

@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotAllow
 from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models import Max
-from IFPRAcessoMain.models import Identificador, Pessoa, Registro
+from ifpracessomain.models import Identificador, Pessoa, Registro
 import socket
 
 @login_required
@@ -56,10 +56,10 @@ def pesquisaPessoa(request):
                                                     ano_entrada__icontains=pesquisa['ano'],
                                                     ativo__icontains=pesquisa['ativo']).order_by('nome_pessoa')
         """Retorna a página de pesquisa com os itens pesquisados"""
-        return render(request, "IFPRAcessoMain/pesquisa.html", {'todas_pessoas':todas_pessoas, 'todos_id':todos_id})
+        return render(request, "ifpracessomain/pesquisa.html", {'todas_pessoas':todas_pessoas, 'todos_id':todos_id})
     else:
         todas_pessoas = Pessoa.objects.all().order_by('nome_pessoa')
-        return render(request, "IFPRAcessoMain/pesquisa.html", {'todas_pessoas':todas_pessoas, 'todos_id':todos_id})
+        return render(request, "ifpracessomain/pesquisa.html", {'todas_pessoas':todas_pessoas, 'todos_id':todos_id})
 
 @login_required
 def insertId(request):
@@ -81,7 +81,7 @@ def insertId(request):
         return HttpResponseRedirect("/insertId/")
     else:
         todos_id = Identificador.objects.all().order_by('nome_id')
-        return render(request, "IFPRAcessoMain/insertId.html", {'todos_id':todos_id})
+        return render(request, "ifpracessomain/insertId.html", {'todos_id':todos_id})
 
 @login_required
 def deleteId(request):
@@ -222,7 +222,7 @@ def insertPessoa(request):
                                         "&ano="+pessoa.ano_entrada+
                                         "&ativo="+pessoa.ativo)
     else:
-        return render(request, "IFPRAcessoMain/insertPessoa.html", {'todos_id':todos_id})
+        return render(request, "ifpracessomain/insertPessoa.html", {'todos_id':todos_id})
 
 @login_required
 def updatePessoa(request):
@@ -288,7 +288,7 @@ def updatePessoa(request):
                                         "&ano="+pessoa.ano_entrada+
                                         "&ativo="+pessoa.ativo)
     else:
-        return render(request, "IFPRAcessoMain/updatePessoa.html", {'todos_id':todos_id})
+        return render(request, "ifpracessomain/updatePessoa.html", {'todos_id':todos_id})
 
 @login_required
 def update_session(request):
@@ -312,18 +312,18 @@ def uploadRegistry(request):
     Tela upload de Registros
     Guarda os registros no banco para fácil acesso
     """
-    if request.method == 'POST' and request.FILES['registry']:
-        registry = []
-        registro = Registro()
-        for line in request.FILES['registry']:
-            registry = line.strip().decode().split("[")
-            registro.id_registro = int(registry[0])
-            registro.nr_catraca = request.POST.get("catraca")
-            registro.matricula = int(registry[2])
-            registro.dt_registro = registry[3]
-            registro.operacao = int(registry[4])
-            try:
-                registro.save()
-            except Exception as e:
-                print(e)            
-    return render(request, "IFPRAcessoMain/uploadRegistry.html")
+    # if request.method == 'POST' and request.FILES['registry']:
+    #     registry = []
+    #     registro = Registro()
+    #     for line in request.FILES['registry']:
+    #         registry = line.strip().decode().split("[")
+    #         registro.id_registro = int(registry[0])
+    #         registro.nr_catraca = request.POST.get("catraca")
+    #         registro.matricula = int(registry[2])
+    #         registro.dt_registro = registry[3]
+    #         registro.operacao = int(registry[4])
+    #         try:
+    #             registro.save()
+    #         except Exception as e:
+    #             print(e)            
+    return render(request, "ifpracessomain/uploadRegistry.html")

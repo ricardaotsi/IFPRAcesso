@@ -4,8 +4,8 @@ while ! pg_isready -h "127.0.0.1"; do
 done
 yes | python3 manage.py makemigrations
 python3 manage.py migrate
-yes | python3 manage.py makemigrations IFPRAcessoMain
-python3 manage.py migrate IFPRAcessoMain
+yes | python3 manage.py makemigrations ifpracessomain
+python3 manage.py migrate ifpracessomain
 cat <<EOF | python3 manage.py shell
 from django.contrib.auth import get_user_model
 
