@@ -50,11 +50,12 @@ for ip in TCP_IP:
             else:
                 cursor.execute("select * from ifpracessomain_registro where id_registro=%s", (int(data[0][-9:].lstrip("0")),))
                 if not cursor.fetchone():
-                    insertQuery = "insert into ifpracessomain_registro (nr_catraca, id_registro, matricula, dt_registro, operacao) VALUES (%s, %s, %s, %s, %s)"
-                    vars = ip[-1], data[0][-9:], data[2], datetime.strptime(data[3], '%d/%m/%Y %H:%M:%S'), data[4]
-                    query.execute(insertQuery, vars)
-                    connection.commit()
-                    print(data)
+                    if data[2].isdigit():
+                        insertQuery = "insert into ifpracessomain_registro (nr_catraca, id_registro, matricula, dt_registro, operacao) VALUES (%s, %s, %s, %s, %s)"
+                        vars = ip[-1], data[0][-9:], data[2], datetime.strptime(data[3], '%d/%m/%Y %H:%M:%S'), data[4]
+                        query.execute(insertQuery, vars)
+                        connection.commit()
+                        print(data)
             idRegistro+=1
     except Exception as e:
         print(e)
