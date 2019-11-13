@@ -316,5 +316,5 @@ def relatorio(request):
     mat = request.GET.get("matricula")
     nome = request.GET.get("nome")
     if Registro.objects.filter(matricula=mat):
-        todos_registros = Registro.objects.filter(matricula=mat)
+        todos_registros = Registro.objects.filter(matricula=mat).order_by('dt_registro')
     return render(request, "ifpracessomain/relatorio.html", {"registros":todos_registros, "nome":nome})

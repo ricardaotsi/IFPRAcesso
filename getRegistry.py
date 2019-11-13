@@ -48,7 +48,7 @@ for ip in TCP_IP:
             if "01+RR+050=" in data[0]:
                 break
             else:
-                cursor.execute("select * from ifpracessomain_registro where id_registro=%s", (int(data[0][-9:].lstrip("0")),))
+                cursor.execute("select * from ifpracessomain_registro where id_registro=%s and nr_catraca=%s", (int(data[0][-9:].lstrip("0")),ip[-1],))
                 if not cursor.fetchone():
                     if data[2].isdigit():
                         insertQuery = "insert into ifpracessomain_registro (nr_catraca, id_registro, matricula, dt_registro, operacao) VALUES (%s, %s, %s, %s, %s)"
