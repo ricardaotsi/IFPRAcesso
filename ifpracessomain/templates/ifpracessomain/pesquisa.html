@@ -75,9 +75,9 @@
         {% for pessoa in todas_pessoas %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <div class="col-2 id">{{ pessoa.id_pessoa }} </div>
-            <div class="col-4 alterarpessoa"><a href="javascript:void(0)">{{ pessoa.nome_pessoa }}</a></div>
+            <div class="col-4 alterarpessoa"><a title="Clique para alterar usuário" href="javascript:void(0)">{{ pessoa.nome_pessoa }}</a></div>
             <div class="col-2">{{ pessoa.cracha_pessoa }} </div>
-            <div class="col-2 relatorio"><a href="javascript:void(0)">{{ pessoa.matricula_pessoa }} </a></div>
+            <div class="col-2 relatorio"><a title="Clique para gerar relatório do usuário" href="javascript:void(0)">{{ pessoa.matricula_pessoa }} </a></div>
             <div class="col-1">{{ pessoa.ano_entrada }} </div>
             <div class="col-1">{{ pessoa.ativo }} </div>
         </li>
