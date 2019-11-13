@@ -8,38 +8,32 @@
 </div>
 <div class="container bg-white mt-3 text-center html-content">
     <h1 class="mt-3 mb-3" id="h1-insertid">Registros</h1>
-    <ul class="list-group mb-3 col">
-        <li class="list-group-item d-flex justify-content-between align-items-center" id="titulo">
-            <div class="col-5">
-                <h5>Nome</h5>
-            </div>
-            <div class="col-1">
-                <h5>Matricula</h5>
-            </div>
-            <div class="col-3">
-                <h5>Data</h5>
-            </div>
-            <div class="col-2">
-                <h5>Operação</h5>
-            </div>
-            <div class="col-1">
-                <h5>Catraca</h5>
-            </div>
-        </li>
-        {% for r in registros %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="col-5">{{ nome }}</div>
-            <div class="col-1">{{ r.matricula }}</div>
-            <div class="col-3">{{ r.dt_registro }} </div>
-            {% if r.operacao == 1%}
-            <div class="col-2">Entrada</div>
-            {% else %}
-            <div class="col-2">Saída</div>
-            {% endif %}
-            <div class="col-1">{{ r.nr_catraca }} </div>
-        </li>
-        {% endfor %}
-    </ul>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Matricula</th>
+                <th scope="col">Data</th>
+                <th scope="col">Operação</th>
+                <th scope="col">Catraca</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in registros %}
+            <tr>
+                <td>{{ nome }}</td>
+                <td>{{ r.matricula }}</td>
+                <td>{{ r.dt_registro|date:'d/m/Y H:i' }}</td>
+                {% if r.operacao == 1%}
+                <td>Entrada</td>
+                {% else %}
+                <td>Saída</td>
+                {% endif %}
+                <td>{{ r.nr_catraca }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
 {% block scripts %}
