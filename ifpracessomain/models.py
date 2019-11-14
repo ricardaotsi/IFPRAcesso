@@ -8,7 +8,7 @@ class Identificador(models.Model):
 class Pessoa(models.Model):
     nome_pessoa = models.CharField(max_length=50, unique=True)
     id_pessoa = models.ForeignKey(Identificador, on_delete=models.PROTECT)
-    cracha_pessoa = models.IntegerField(unique=True)
+    cracha_pessoa = models.BigIntegerField(unique=True)
     matricula_pessoa = models.BigIntegerField(unique=True)
     ano_entrada = models.IntegerField()
     ativo = models.CharField(max_length=1, default="S")
