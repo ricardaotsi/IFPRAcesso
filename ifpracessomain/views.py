@@ -161,6 +161,7 @@ def insertPessoa(request):
     if request.method == 'POST':
         """Recebe dados do Form e tenta salvar"""
         pessoa = Pessoa()
+        pessoa.pk=Pessoa.objects.aggregate(Max('id')).get('id__max')+1
         pessoa.nome_pessoa = request.POST.get('nome').upper()
         pessoa.id_pessoa = Identificador.objects.get(nome_id=request.POST.get('identificador'))
         pessoa.cracha_pessoa = request.POST.get('cracha')
