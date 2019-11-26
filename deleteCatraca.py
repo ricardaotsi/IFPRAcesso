@@ -19,10 +19,10 @@ def textFormat (data):
         aux += BYTE_END#Inserindo byte Final
         return aux
 
-TCP_IP = ['172.17.150.1',
-            '172.17.150.2',
+TCP_IP = ['172.17.150.1']#,
+            #'172.17.150.2',
             #'172.17.150.3',
-            '172.17.150.4']
+            #'172.17.150.4']
 TCP_PORT = 3000
 BUFFER_SIZE = 1024
 
