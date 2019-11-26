@@ -10,7 +10,6 @@
                 <label>Data Fim:</label>
                 <input type="date" class="dt_fim">
                 <button type="submit" class="filtrar btn btn-index text-center">Filtrar</button>
-                <button type="submit" class="restaurar btn btn-index text-center">Restaurar</button>
             </div>
         </div>
     </form>
@@ -30,7 +29,7 @@
                 <th scope="col">Catraca</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="tabela">
             {% for r in registros %}
             <tr class="registro">
                 <td>{{ nome }}</td>

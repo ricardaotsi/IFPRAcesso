@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    var registros = $( ".registro" )
+    
     $('.exportar').click(function CreatePDFfromHTML() {
         var doc = new jsPDF('p', 'mm', 'a4');
         doc.autoTable({
@@ -10,10 +12,16 @@ $(document).ready(function () {
 
     $('.filtrar').click(function(event){
         event.preventDefault();
+        $( ".registro" ).each(function( ) {
+            $(this).remove()
+        });
+        registros.each(function( ) {
+            $(".tabela").append($(this))
+        });
         var inicio = new Date($(".dt_inicio")[0].value);
         var fim = new Date($(".dt_fim")[0].value);
         if (inicio.length != 0 && fim.length == 0){
-            $( ".registro" ).each(function( index ) {
+            $( ".registro" ).each(function(  ) {
                 y=$(this)[0].children[2].textContent.substring(6,10);
                 m=$(this)[0].children[2].textContent.substring(3,5);
                 d=$(this)[0].children[2].textContent.substring(0,2);
@@ -21,10 +29,9 @@ $(document).ready(function () {
                 if(date_test<inicio){
                     $(this).remove();
                 }
-                // console.log(date_test, inicio)
             });
         }else if(inicio.length != 0 && fim.length != 0){
-            $( ".registro" ).each(function( index ) {
+            $( ".registro" ).each(function(  ) {
                 y=$(this)[0].children[2].textContent.substring(6,10);
                 m=$(this)[0].children[2].textContent.substring(3,5);
                 d=$(this)[0].children[2].textContent.substring(0,2);
@@ -34,10 +41,5 @@ $(document).ready(function () {
                 }
             });
         }
-    });
-
-    $('.restaurar').click(function(event){
-        event.preventDefault();
-        location.reload(); 
     });
 });
