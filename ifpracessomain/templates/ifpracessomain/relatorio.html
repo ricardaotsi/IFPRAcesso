@@ -2,6 +2,18 @@
 {% load static %}
 {% block content %}
 <div class="container bg-white mt-3 text-center">
+    <form class="mt-3 pessoa" method="GET">
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Data Início:</label>
+                <input type="date" class="dt_inicio">
+                <label>Data Fim:</label>
+                <input type="date" class="dt_fim">
+                <button type="submit" class="filtrar btn btn-index text-center">Filtrar</button>
+                <button type="submit" class="restaurar btn btn-index text-center">Restaurar</button>
+            </div>
+        </div>
+    </form>
     <div class="mt-3 mb-3 text-center">
         <button type="submit" class="exportar btn btn-index text-center">Exportar</button>
     </div>
@@ -20,7 +32,7 @@
         </thead>
         <tbody>
             {% for r in registros %}
-            <tr>
+            <tr class="registro">
                 <td>{{ nome }}</td>
                 <td>{{ r.matricula }}</td>
                 <td>{{ r.dt_registro|date:'d/m/Y H:i' }}</td>
